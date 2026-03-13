@@ -28,6 +28,7 @@
     "extra": {
       "router": {},
       "eas": {
+        "projectId": "08a06f3c-2882-4c73-a592-24734ed1d9c7"
       }
     },
     "owner": "beqsona"

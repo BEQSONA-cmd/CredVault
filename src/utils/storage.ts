@@ -71,6 +71,23 @@ class StorageService {
         }
     }
 
+    async search(query: string): Promise<Credential[]> {
+        try {
+            const credentials = await this.getAll();
+            const lowerQuery = query.toLowerCase();
+            return credentials.filter(c =>
+                c.name.toLowerCase().includes(lowerQuery) ||
+                c.fields.some(f => f.value.toLowerCase().includes(lowerQuery))
+            );
+        } catch (error) {
+            Alert.alert(
+                'Error',
+                'Failed to search credentials. Please try again.'
+            );
+            return [];
+        }
+    }
+
     async get(id: string): Promise<Credential | null> {
         try {
             const credentials = await this.getAll();

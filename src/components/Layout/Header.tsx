@@ -2,18 +2,35 @@ import { View, Text, TouchableOpacity, TextInput, Animated } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
 import { useState, useRef } from 'react';
+import { useStatic } from '../shared/useStatic';
+import { storage } from '../../utils/storage';
+import { Credential } from '../../types'; // Import the correct Credential type
 
 export default function Header() {
     const { toggleTheme, isDark } = useTheme();
+    const [credentials, setCredentials] = useStatic<Credential[]>('credentials', []);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [isOpening, setIsOpening] = useState(false);
 
     const searchWidth = useRef(new Animated.Value(40)).current;
 
+    const handleSearch = async (query: string) => {
+        setSearchQuery(query);
+        if (query.trim() === '') {
+            const allCredentials = await storage.getAll();
+            if (allCredentials.length !== 0) {
+                setCredentials(allCredentials);
+                return;
+            }
+        } else {
+            const results = await storage.search(query);
+            setCredentials(results);
+        }
+    }
+
     const toggleSearch = () => {
         if (isSearchActive) {
-            // Close search
             setIsOpening(true);
             Animated.parallel([
                 Animated.timing(searchWidth, {
@@ -70,7 +87,7 @@ export default function Header() {
                                 placeholder="Search..."
                                 placeholderTextColor="rgba(255,255,255,0.6)"
                                 value={searchQuery}
-                                onChangeText={setSearchQuery}
+                                onChangeText={handleSearch}
                                 className="flex-1 ml-2 text-white text-sm"
                                 autoFocus={true}
                             />
