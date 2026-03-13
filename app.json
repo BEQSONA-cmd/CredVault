@@ -1,15 +1,35 @@
 {
   "expo": {
-    "name": "my-expo-app",
-    "slug": "my-expo-app",
+    "name": "CredVault",
+    "slug": "CredVault",
     "version": "1.0.0",
-    "entryPoint": "./node_modules/expo-router/entry",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.beqsona.CredVault"
+    },
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": ["expo-router"],
-    "orientation": "portrait",
-    "scheme": "my-expo-app",
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "CredVault",
+    "extra": {
+      "router": {},
+      "eas": {
+      }
+    },
+    "owner": "beqsona"
   }
 }

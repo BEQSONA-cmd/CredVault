@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, TextInput, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 export default function Header() {
     const { toggleTheme, isDark } = useTheme();
@@ -44,8 +44,8 @@ export default function Header() {
     };
 
     return (
-        <View className={`${isDark ? 'bg-gray-900' : 'bg-blue-600'} p-4 shadow-lg`}>
-            <View className="flex-row items-center justify-between mt-10 gap-3">
+        <View className={"bg-blue-600 p-4 shadow-lg"}>
+            <View className="flex-row items-center justify-between gap-3">
                 {/* Logo and Title with animation */}
                 <View
                     className="flex-row items-center gap-2"
@@ -55,7 +55,7 @@ export default function Header() {
                         size={28}
                         color="white"
                     />
-                    <Text className="text-white text-xl font-bold">PassVault</Text>
+                    <Text className="text-white text-xl font-bold">CredVault</Text>
                 </View>
 
                 {/* Search Container */}

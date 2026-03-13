@@ -25,7 +25,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         if (savedTheme) {
             setTheme(savedTheme);
         } else {
-            // Use system theme as default
             setTheme(systemColorScheme as Theme || 'light');
         }
     };
