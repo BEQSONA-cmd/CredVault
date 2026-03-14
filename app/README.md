@@ -17,5 +17,3 @@ eas build:configure
 ```
 eas build -p android --profile production
 ```
-
-
