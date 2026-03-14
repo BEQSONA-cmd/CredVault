@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import './global.css';
 import { useEffect } from 'react';
@@ -10,15 +10,23 @@ import { ThemeProvider, useTheme } from '../context/ThemeContext';
 
 function RootLayoutWrapper() {
     const { isDark } = useTheme();
+    const router = useRouter();
+    const pathname = usePathname();
     useEffect(() => {
         NavigationBar.setStyle("dark");
     }, [isDark]);
     return (
         <SafeAreaProvider>
             <SafeAreaView style={{ flex: 1 }} className="bg-gray-900">
-                <Header />
-                <Stack screenOptions={{ headerShown: false }} />
-                <Footer />
+                {pathname === '/' ? (
+                    <>
+                        <Header />
+                        <Stack screenOptions={{ headerShown: false }} />
+                        <Footer />
+                    </>
+                ) : (
+                    <Stack screenOptions={{ headerShown: false }} />
+                )}
             </SafeAreaView>
         </SafeAreaProvider>
     );

@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { View, Modal, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Text, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { storage } from '../utils/storage';
-import { useStatic } from './shared/useStatic';
-import { Credential } from '../types';
-import { useTheme } from '../context/ThemeContext';
+import { storage } from '../../utils/storage';
+import { useStatic } from '../../components/shared/useStatic';
+import { Credential } from '../../types';
+import { useTheme } from '../../context/ThemeContext';
+import { useRouter } from 'expo-router';
 
 interface AddFieldProps {
     field: Credential['fields'][0];
@@ -69,15 +70,17 @@ export function AddField({ field, updateField, removeField }: AddFieldProps) {
     );
 }
 
-export default function AddCredentialModal() {
+export default function AddCredential() {
     const [credentials, setCredentials] = useStatic<Credential[]>('credentials');
-    const [modalVisible, setModalVisible] = useStatic('addModalVisible', false);
     const [name, setName] = useState('');
     const [fields, setFields] = useState<Credential['fields']>([
         { id: Date.now().toString(), value: '', type: 'email' },
         { id: (Date.now() + 1).toString(), value: '', type: 'password' }
     ]);
+    const router = useRouter();
+
     const { isDark } = useTheme();
+
 
     const handleAddField = () => {
         setFields([...fields, { id: Date.now().toString(), value: '', type: 'text' }]);
@@ -114,93 +117,84 @@ export default function AddCredentialModal() {
 
         await storage.add(credential);
         setCredentials([...credentials, credential]);
-        setModalVisible(false);
+        router.back();
     };
 
     useEffect(() => {
-        if (!modalVisible) {
-            setName('');
-            setFields([
-                { id: Date.now().toString(), value: '', type: 'email' },
-                { id: (Date.now() + 1).toString(), value: '', type: 'password' }
-            ]);
-        }
-    }, [modalVisible]);
+        setName('');
+        setFields([
+            { id: Date.now().toString(), value: '', type: 'email' },
+            { id: (Date.now() + 1).toString(), value: '', type: 'password' }
+        ]);
+    }, []);
 
     return (
-        <Modal
-            visible={modalVisible}
-            animationType="slide"
-            onRequestClose={() => setModalVisible(false)}
-            presentationStyle="pageSheet"
-        >
-            <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-                {/* Modal Header */}
-                <View className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} px-6 py-4 border-b flex-row justify-between items-center`}>
-                    <TouchableOpacity
-                        onPress={() => setModalVisible(false)}
-                        className={`w-10 h-10 items-center justify-center rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}
-                    >
-                        <Ionicons name="close" size={20} color={isDark ? "#9CA3AF" : "#374151"} />
-                    </TouchableOpacity>
-                    <Text className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                        New Credential
-                    </Text>
-                    <View className="w-10" />
-                </View>
-
-                <ScrollView className="flex-1 p-6">
-                    {/* Credential Name */}
-                    <View className="mb-6">
-                        <Text className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-2`}>
-                            Credential Name
-                        </Text>
-                        <TextInput
-                            placeholder="e.g., My Facebook Account"
-                            value={name}
-                            onChangeText={setName}
-                            className={`${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-800'} border rounded-xl px-4 py-3 text-base`}
-                            placeholderTextColor={isDark ? "#6B7280" : "#9CA3AF"}
-                        />
-                    </View>
-
-                    {/* Fields */}
-                    <Text className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-3`}>
-                        Fields
-                    </Text>
-
-                    {fields.map((field, index) => (
-                        <AddField
-                            key={field.id}
-                            field={field}
-                            updateField={updateField}
-                            removeField={removeField}
-                        />
-                    ))}
-
-                    {/* Add Field Button */}
-                    <TouchableOpacity
-                        onPress={handleAddField}
-                        className={`mt-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl border p-4 flex-row items-center justify-center`}
-                    >
-                        <View className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'} items-center justify-center mr-3`}>
-                            <Ionicons name="add" size={20} color="#3B82F6" />
-                        </View>
-                        <Text className="text-blue-500 font-semibold">Add another field</Text>
-                    </TouchableOpacity>
-                </ScrollView>
-
-                {/* Save Button */}
-                <View className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} border-t px-6 py-4`}>
-                    <TouchableOpacity
-                        onPress={handleSave}
-                        className="bg-blue-500 py-3 px-4 rounded-xl flex-row items-center justify-center"
-                    >
-                        <Ionicons name="save-outline" size={20} color="white" />
-                        <Text className="text-white font-semibold ml-2">Save Credential</Text>
-                    </TouchableOpacity>
-                </View>
+        <View className={`flex-1 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+            {/* Modal Header */}
+            <View className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} px-6 py-4 border-b flex-row justify-between items-center`}>
+                <TouchableOpacity
+                    onPress={() => router.back()}
+                    className={`w-10 h-10 items-center justify-center rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}
+                >
+                    <Ionicons name="close" size={20} color={isDark ? "#9CA3AF" : "#374151"} />
+                </TouchableOpacity>
+                <Text className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                    New Credential
+                </Text>
+                <View className="w-10" />
             </View>
-        </Modal>
+
+            <ScrollView className="flex-1 p-6">
+                {/* Credential Name */}
+                <View className="mb-6">
+                    <Text className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-2`}>
+                        Credential Name
+                    </Text>
+                    <TextInput
+                        placeholder="e.g., My Facebook Account"
+                        value={name}
+                        onChangeText={setName}
+                        className={`${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-800'} border rounded-xl px-4 py-3 text-base`}
+                        placeholderTextColor={isDark ? "#6B7280" : "#9CA3AF"}
+                    />
+                </View>
+
+                {/* Fields */}
+                <Text className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} mb-3`}>
+                    Fields
+                </Text>
+
+                {fields.map((field, index) => (
+                    <AddField
+                        key={field.id}
+                        field={field}
+                        updateField={updateField}
+                        removeField={removeField}
+                    />
+                ))}
+
+                {/* Add Field Button */}
+                <TouchableOpacity
+                    onPress={handleAddField}
+                    className={`mt-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl border p-4 flex-row items-center justify-center`}
+                >
+                    <View className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'} items-center justify-center mr-3`}>
+                        <Ionicons name="add" size={20} color="#3B82F6" />
+                    </View>
+                    <Text className="text-blue-500 font-semibold">Add another field</Text>
+                </TouchableOpacity>
+            </ScrollView>
+
+            {/* Save Button */}
+            <View className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} border-t px-6 py-4`}>
+                <TouchableOpacity
+                    onPress={handleSave}
+                    className="bg-blue-500 py-3 px-4 rounded-xl flex-row items-center justify-center"
+                >
+                    <Ionicons name="save-outline" size={20} color="white" />
+                    <Text className="text-white font-semibold ml-2">Save Credential</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
     );
 }

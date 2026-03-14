@@ -1,6 +1,6 @@
 {
   "name": "credvault",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "scripts": {
     "android": "expo start --android",
     "ios": "expo start --ios",
