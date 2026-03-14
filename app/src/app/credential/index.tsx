@@ -14,7 +14,7 @@ export default function CredentialPage() {
     const [credentials, setCredentials] = useStatic<Credential[]>('credentials');
     const params = useLocalSearchParams<{ id?: string }>();
     const [credential, setCredential] = useState<Credential | null>(null);
-    const [fields, setFields] = useState<Credential['fields']>([]);
+    const [fields, setFields] = useStatic<Credential['fields']>('fields', []);
     const [isEditing, setIsEditing] = useStatic<{ [key: string]: boolean }>('editingFields', {});
     const { isDark } = useTheme();
 

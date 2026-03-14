@@ -16,12 +16,29 @@ interface CredentialFieldProps {
 
 export function EditingCredentialField({ field, index, credential }: CredentialFieldProps) {
     const [credentials, setCredentials] = useStatic<Credential[]>('credentials');
+    const [fields, setFields] = useStatic<Credential['fields']>('fields');
     const [value, setValue] = useState(field.value);
     const [selectedType, setSelectedType] = useState(field.type);
     const [isEditing, setIsEditing] = useStatic<{ [key: string]: boolean }>('editingFields');
     const { isDark } = useTheme();
 
+    const deleteField = async (fieldId: string) => {
+        const updatedCredential = {
+            ...credential,
+            fields: fields.filter(f => f.id !== fieldId)
+        } as Credential;
+        await storage.update(credential!.id, updatedCredential);
+        setFields(updatedCredential.fields);
+        setCredentials(credentials.map(c => c.id === credential!.id ? updatedCredential : c));
+    };
+
     const handleSave = async () => {
+
+        if (!value.trim()) {
+            Alert.alert('Validation Error', 'Field value cannot be empty');
+            return;
+        }
+
         const updatedCredential = {
             ...credential,
             fields: credential.fields.map(f =>
@@ -34,6 +51,10 @@ export function EditingCredentialField({ field, index, credential }: CredentialF
     };
 
     const handleCancel = () => {
+        if (!field.value.trim()) {
+            deleteField(field.id);
+            return;
+        }
         setValue(field.value);
         setSelectedType(field.type);
         setIsEditing(prev => ({ ...prev, [field.id]: false }));
