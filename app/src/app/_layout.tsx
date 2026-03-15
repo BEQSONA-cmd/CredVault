@@ -2,11 +2,11 @@ import { Stack, usePathname, useRouter } from 'expo-router';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import './global.css';
 import { useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
 import Footer from '../components/Layout/Footer';
 import Header from '../components/Layout/Header';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
+import { PinCodeProvider } from '../context/PinCodeContext';
 
 function RootLayoutWrapper() {
     const { isDark } = useTheme();
@@ -35,7 +35,9 @@ function RootLayoutWrapper() {
 export default function RootLayout() {
     return (
         <ThemeProvider>
-            <RootLayoutWrapper />
+            <PinCodeProvider>
+                <RootLayoutWrapper />
+            </PinCodeProvider>
         </ThemeProvider>
     );
 }

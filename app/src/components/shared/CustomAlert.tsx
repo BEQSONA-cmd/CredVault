@@ -1,4 +1,3 @@
-import React from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 

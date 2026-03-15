@@ -5,15 +5,21 @@ import { useState, useRef } from 'react';
 import { useStatic } from '../shared/useStatic';
 import { storage } from '../../utils/storage';
 import { Credential } from '../../types'; // Import the correct Credential type
+import { useRouter } from 'expo-router';
 
 export default function Header() {
-    const { toggleTheme, isDark } = useTheme();
+    const { isDark } = useTheme();
+    const router = useRouter();
     const [credentials, setCredentials] = useStatic<Credential[]>('credentials', []);
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [isOpening, setIsOpening] = useState(false);
 
     const searchWidth = useRef(new Animated.Value(40)).current;
+
+    const openSettings = () => {
+        router.push('/settings');
+    }
 
     const handleSearch = async (query: string) => {
         setSearchQuery(query);
@@ -107,13 +113,13 @@ export default function Header() {
                     )}
                 </View>
 
-                {/* Theme Toggle */}
+                {/* settings button */}
                 <TouchableOpacity
-                    onPress={toggleTheme}
+                    onPress={openSettings}
                     className="w-11 h-11 items-center justify-center rounded-full bg-white/20"
                 >
                     <Ionicons
-                        name={isDark ? 'sunny-outline' : 'moon-outline'}
+                        name={isDark ? "settings-outline" : "settings-sharp"}
                         size={20}
                         color="white"
                     />

@@ -3,7 +3,6 @@ import { Alert, Platform } from 'react-native';
 import { Credential } from '../types';
 
 const STORAGE_KEY = 'passvault_credentials';
-const INIT_KEY = 'passvault_initialized';
 const THEME_KEY = '@theme';
 
 
@@ -28,23 +27,6 @@ class StorageService {
         } catch (error) {
             this.isAvailable = false;
             return false;
-        }
-    }
-
-    async isFirstLaunch(): Promise<boolean> {
-        try {
-            const initialized = await AsyncStorage.getItem(INIT_KEY);
-            return initialized !== 'true';
-        } catch {
-            return true;
-        }
-    }
-
-    async markInitialized(): Promise<void> {
-        try {
-            await AsyncStorage.setItem(INIT_KEY, 'true');
-        } catch (error) {
-            console.error('Error marking initialized:', error);
         }
     }
 
@@ -125,6 +107,17 @@ class StorageService {
         }
     }
 
+    async addList(credentials: Credential[]): Promise<boolean> {
+        try {
+            const existing = await this.getAll();
+            const combined = [...existing, ...credentials];
+            return this.save(combined);
+        } catch (error) {
+            console.error('Error adding credentials:', error);
+            return false;
+        }
+    }
+
     async add(credential: Credential): Promise<boolean> {
         try {
             const credentials = await this.getAll();
@@ -163,34 +156,39 @@ class StorageService {
     }
 
     async clearAll(): Promise<boolean> {
-        return new Promise((resolve) => {
-            Alert.alert(
-                'Clear All Data',
-                'Are you sure you want to delete ALL credentials? This action cannot be undone.',
-                [
-                    {
-                        text: 'Cancel',
-                        style: 'cancel',
-                        onPress: () => resolve(false)
-                    },
-                    {
-                        text: 'Delete All',
-                        style: 'destructive',
-                        onPress: async () => {
-                            try {
-                                await AsyncStorage.removeItem(STORAGE_KEY);
-                                // Don't remove INIT_KEY so we don't show onboarding again
-                                resolve(true);
-                            } catch (error) {
-                                console.error('Error clearing data:', error);
-                                Alert.alert('Error', 'Failed to clear data');
-                                resolve(false);
-                            }
-                        }
-                    }
-                ]
-            );
-        });
+        try {
+            await AsyncStorage.removeItem(STORAGE_KEY);
+            return true;
+        } catch (error) {
+            console.error('Error clearing storage:', error);
+            return false;
+        }
+    }
+
+    async setPin(value: string): Promise<void> {
+        try {
+            await AsyncStorage.setItem('pinCode', value);
+        } catch (error) {
+            console.error('Error setting pin code:', error);
+        }
+    }
+
+    async getPin(): Promise<string | null> {
+        try {
+            const pin = await AsyncStorage.getItem('pinCode');
+            return pin;
+        } catch (error) {
+            console.error('Error getting pin code:', error);
+            return null;
+        }
+    }
+
+    async removePin(): Promise<void> {
+        try {
+            await AsyncStorage.removeItem('pinCode');
+        } catch (error) {
+            console.error('Error removing pin code:', error);
+        }
     }
 
     async saveTheme(theme: 'light' | 'dark'): Promise<void> {
